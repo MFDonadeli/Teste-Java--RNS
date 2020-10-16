@@ -1,0 +1,74 @@
+package com.rns.testes.java.controller;
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+class FilialProdutoController {
+    private final FilialProdutoRepository repository;
+
+    private final FilialProdutoModelAssembler assembler;
+  
+    FilialProdutoController(FilialProdutoRepository repository, FilialProdutoModelAssembler assembler) {
+  
+      this.repository = repository;
+      this.assembler = assembler;
+    }
+
+
+    @GetMapping("/filialproduto/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<List<FilialProduto>> findAll() {
+        return repository.findAll();
+    }
+
+    @GetMapping("/filialproduto/{idproduto}", produces = MediaType.APPLICATION_JSON_VALUE, params = {"idproduto"})
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<FilialProduto> findById(@RequestParam(name = "idproduto") Long id) {
+        return repository.findById(id).orElseThrow(() -> new FilialProdutoNotFoundException(id));
+    }
+
+    @PutMapping("/filialproduto/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<FilialProduto> update(@RequestBody FilialProduto newfilialproduto) {
+        return repository.findById(newfilialproduto.getIdProduto())
+          .map(filialproduto -> {
+            employee.setName(newfilialproduto.getName());
+            employee.setRole(newfilialproduto.getRole());
+            return repository.save(filialproduto);
+          })
+          .orElseGet(() -> {
+            newEmployee.setId(newfilialproduto.getIdProduto());
+            return repository.save(filialproduto);
+          });
+    }
+
+    
+
+    @PostMapping(value = BASE_URL + "insert", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<FilialProduto> insert(@RequestBody FilialDto dto) {
+        return ResponseEntity.ok(service.save(FilialMapper.INSTANCE.dtoToEntity(dto)));
+    }
+
+    @GetMapping("/filialproduto/{id}")
+    FilialProduto one(@PathVariable Long id) {
+
+    return repository.findById(id)
+      .orElseThrow(() -> new FilialProdutoNotFoundException(id));
+    }
+
+  @PutMapping("/filialproduto/{id}")
+  Employee replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
+
+    return repository.findById(id)
+      .map(employee -> {
+        employee.setName(newEmployee.getName());
+        employee.setRole(newEmployee.getRole());
+        return repository.save(employee);
+      })
+      .orElseGet(() -> {
+        newEmployee.setId(id);
+        return repository.save(newEmployee);
+      });
+  }
+}
